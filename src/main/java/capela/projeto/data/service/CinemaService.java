@@ -43,8 +43,8 @@ public class CinemaService implements ServiceInterface<CinemaVO,Long>{
           return isExists.get();
     }
 
-    private CinemaVO convertToFilmeVO(Cinema filme){
-        return CinemaVO.create(filme);
+    private CinemaVO convertToCinemaVO(Cinema cinema){
+        return CinemaVO.create(cinema);
     }
 
     @Override
@@ -57,12 +57,12 @@ public class CinemaService implements ServiceInterface<CinemaVO,Long>{
 
     @Override
     public List<CinemaVO> findAll() {
-        return this.cinemaDao.findAll().stream().map(this::convertToFilmeVO).collect(Collectors.toList());
+        return this.cinemaDao.findAll().stream().map(this::convertToCinemaVO).collect(Collectors.toList());
     }
 
     @Override
     public Page<CinemaVO> findAll(Pageable pageable) {
-        return this.cinemaDao.findAll(pageable).map(this::convertToFilmeVO);
+        return this.cinemaDao.findAll(pageable).map(this::convertToCinemaVO);
     }
 
     @Override

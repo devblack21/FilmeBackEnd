@@ -2,6 +2,7 @@ package capela.projeto.web.controllers;
 
 import capela.projeto.data.service.CinemaService;
 import capela.projeto.web.vo.CinemaVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +17,7 @@ public class CinemasController implements ControllerCrudInterface<CinemaVO,Long>
 
     private final CinemaService cinemaService;
 
+    @Autowired
     public CinemasController(CinemaService cinemaService) {
         this.cinemaService = cinemaService;
     }
@@ -27,9 +29,9 @@ public class CinemasController implements ControllerCrudInterface<CinemaVO,Long>
     @Override
     public ResponseEntity<?> inserir(CinemaVO req) {
         req.setId(null);
-        final var filme = this.cinemaService.save(req);
-        return created(URI.create(format("/cinemas/%d", filme.getId()))).body(Map.of(
-                "id", filme.getId()));
+        final var cinema = this.cinemaService.save(req);
+        return created(URI.create(format("/cinemas/%d", cinema.getId()))).body(Map.of(
+                "id", cinema.getId()));
     }
 
     @Override

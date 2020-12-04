@@ -2,6 +2,7 @@ package capela.projeto.web.controllers;
 
 import capela.projeto.data.service.FilmeService;
 import capela.projeto.web.vo.FilmeVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
@@ -17,6 +18,7 @@ public class FilmesController implements ControllerCrudInterface<FilmeVO,Long> {
 
     private final FilmeService filmeService;
 
+    @Autowired
     public FilmesController(FilmeService filmeService) {
         this.filmeService = filmeService;
     }
