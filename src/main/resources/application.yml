@@ -1,4 +1,23 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /capela
+
 spring:
+  application:
+    name: capela
   jpa:
+    show-sql: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+  jmx:
+    enabled: false
+  datasource:
+    url: jdbc:mysql://localhost:3311/capela?createDatabaseIfNotExist=true&useTimezone=true&serverTimezone=UTC
+    username: root
+    password: root
+
+
