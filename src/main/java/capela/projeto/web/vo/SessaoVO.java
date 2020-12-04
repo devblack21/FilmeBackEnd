@@ -1,6 +1,9 @@
-package capela.projeto.data.entities;
+package capela.projeto.web.vo;
 
-import capela.projeto.web.vo.SessaoVO;
+import capela.projeto.data.entities.Cinema;
+import capela.projeto.data.entities.DiaSemana;
+import capela.projeto.data.entities.Filme;
+import capela.projeto.data.entities.Sessao;
 import lombok.*;
 import org.hibernate.validator.constraints.Range;
 import org.modelmapper.ModelMapper;
@@ -16,32 +19,24 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
-@Entity
-@Table(name = "sessoes")
-public class Sessao {
+public class SessaoVO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotBlank
     @Size(min = 2, max = 100)
-    @Enumerated(EnumType.STRING)
     private DiaSemana diaSemana;
     @NotBlank
     @Size(min = 2, max = 100)
-    @Column(name = "horario",nullable = false)
     private LocalDate horario;
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Cinema cinema;
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Filme filme;
     @NotNull
     @Range(min = 0, max = 99)
-    @Column(name = "classif",nullable = false)
     private int sala;
 
-    public static Sessao create(SessaoVO sessaoVO){
-        return new ModelMapper().map(sessaoVO, Sessao.class);
+    public static SessaoVO create(Sessao sessao){
+        return new ModelMapper().map(sessao, SessaoVO.class);
     }
-
 }
