@@ -9,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -30,14 +31,14 @@ public class Sessao {
     @NotBlank
     @Size(min = 2, max = 100)
     @Column(name = "horario",nullable = false)
-    private LocalDate horario;
+    private LocalDateTime horario;
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Cinema cinema;
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Filme filme;
     @NotNull
     @Range(min = 0, max = 99)
-    @Column(name = "classif",nullable = false)
+    @Column(name = "sala",nullable = false)
     private int sala;
 
     public static Sessao create(SessaoVO sessaoVO){

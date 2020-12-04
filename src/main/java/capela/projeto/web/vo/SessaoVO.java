@@ -12,6 +12,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -29,7 +30,7 @@ public class SessaoVO {
     private DiaSemana diaSemana;
     @NotBlank
     @Size(min = 2, max = 100)
-    private LocalDate horario;
+    private LocalDateTime horario;
     private Cinema cinema;
     private Filme filme;
     @NotNull

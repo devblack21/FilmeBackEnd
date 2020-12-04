@@ -42,12 +42,17 @@ public class SessaoController implements ControllerCrudInterface<SessaoVO,Long> 
     @Override
     public ResponseEntity<?> alterar(Long id, SessaoVO req) {
         req.setId(id);
-        this.sessaoService.save(req);
+        this.sessaoService.update(req);
         return noContent().build();
     }
 
     @Override
     public ResponseEntity<?> excluir( Long id) {
         return this.sessaoService.delete(id);
+    }
+
+    @Override
+    public ResponseEntity<?> listaPaginada(int page, int limit, String direction) {
+        return null;
     }
 }

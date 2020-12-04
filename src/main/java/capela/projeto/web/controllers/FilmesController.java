@@ -43,12 +43,17 @@ public class FilmesController implements ControllerCrudInterface<FilmeVO,Long> {
     @Override
     public ResponseEntity<?> alterar(Long id, FilmeVO req) {
         req.setId(id);
-        this.filmeService.save(req);
+        this.filmeService.update(req);
         return noContent().build();
     }
 
     @Override
     public ResponseEntity<?> excluir( Long id) {
         return this.filmeService.delete(id);
+    }
+
+    @Override
+    public ResponseEntity<?> listaPaginada(int page, int limit, String direction) {
+        return null;
     }
 }

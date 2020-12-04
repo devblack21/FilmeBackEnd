@@ -17,5 +17,9 @@ public interface ControllerCrudInterface<T, ID> {
     public ResponseEntity<?> alterar(@PathVariable ID id, @Validated @RequestBody T req);
     @DeleteMapping("/{id}")
     public ResponseEntity<?> excluir(@PathVariable ID id) ;
+    @GetMapping("/paginated")
+    public ResponseEntity<?> listaPaginada(@RequestParam(value = "page",defaultValue = "0") int page,
+                                           @RequestParam(value = "limit",defaultValue = "12") int limit,
+                                           @RequestParam(value = "direction",defaultValue = "asc") String direction);
 
 }
