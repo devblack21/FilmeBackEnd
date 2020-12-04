@@ -1,79 +1,52 @@
 package capela.projeto.web.controllers;
 
-import static capela.projeto.data.specifications.FilmeSpecification.*;
-import static capela.projeto.web.exception.ControllerException.notFound;
-import static capela.projeto.web.exception.ControllerException.*;
-import static java.lang.String.*;
-import static org.springframework.data.jpa.domain.Specification.*;
-import static org.springframework.http.ResponseEntity.notFound;
-import static org.springframework.http.ResponseEntity.*;
+import capela.projeto.data.service.FilmeService;
+import capela.projeto.web.vo.FilmeVO;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.Map;
-import capela.projeto.data.entities.Filme;
-import capela.projeto.data.repositories.FilmeDao;
-import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import static java.lang.String.format;
+import static org.springframework.http.ResponseEntity.created;
+import static org.springframework.http.ResponseEntity.noContent;
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequestMapping("/filmes")
-public class FilmesController {
-    private final FilmeDao filmeDao;
+public class FilmesController implements ControllerCrudInterface<FilmeVO,Long> {
 
-    public FilmesController(FilmeDao filmeDao) {
-        this.filmeDao = filmeDao;
+    private final FilmeService filmeService;
+
+    public FilmesController(FilmeService filmeService) {
+        this.filmeService = filmeService;
     }
 
-    @GetMapping
+    @Override
     public ResponseEntity<?> listar() {
-        return ok(filmeDao.findAll());
+        return ok(this.filmeService.findAll());
     }
-
-    @PostMapping
-    @Transactional
-    public ResponseEntity<?> inserir(@Validated @RequestBody Filme req) {
-        filmeDao.findOne(where(nomeEq(req.getNome())))
-                .ifPresent(it -> { throw conflict("Já existe um Filme com o mesmo Nome."); });
-
+    @Override
+    public ResponseEntity<?> inserir(FilmeVO req) {
         req.setId(null);
-        final var filme = filmeDao.save(req);
+        final var filme = this.filmeService.save(req);
         return created(URI.create(format("/filmes/%d", filme.getId()))).body(Map.of(
                 "id", filme.getId()));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> buscar(@PathVariable Long id) {
-        return filmeDao.findById(id).map(ResponseEntity::ok)
-                .orElseThrow(() -> notFound("Filme não encontrado"));
+    @Override
+    public ResponseEntity<?> buscar(Long id) {
+        return ResponseEntity.ok(this.filmeService.findById(id));
     }
 
-    @PutMapping("/{id}")
-    @Transactional
-    public ResponseEntity<?> alterar(@PathVariable Long id, @Validated @RequestBody Filme req) {
-        filmeDao.findOne(where(nomeEq(req.getNome()).and(not(idEq(id)))))
-                .ifPresent(it -> { throw conflict("Já existe um Filme com o mesmo Nome."); });
-
+    @Override
+    public ResponseEntity<?> alterar(Long id, FilmeVO req) {
         req.setId(id);
-        filmeDao.save(req);
+        this.filmeService.save(req);
         return noContent().build();
     }
 
-    @DeleteMapping("/{id}")
-    @Transactional
-    public ResponseEntity<?> excluir(@PathVariable Long id) {
-        return filmeDao.findById(id)
-                .map(it -> {
-                    filmeDao.delete(it);
-                    return noContent().build();
-                })
-                .orElseGet(() -> notFound().build());
+    @Override
+    public ResponseEntity<?> excluir( Long id) {
+        return this.filmeService.delete(id);
     }
 }
