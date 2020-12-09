@@ -35,11 +35,22 @@ public class FilmeService implements ServiceInterface<FilmeVO,Long>{
         return isExists.get();
     }
 
-    private boolean isNomeExists(String nome, Long id){
+    private boolean isNomeExists(String nome){
         AtomicBoolean isExists = new AtomicBoolean(false);
-          this.filmeDao.findOne(where(nomeEq(nome).and(not(idEq(id)))))
+          this.filmeDao.findOne(where(nomeEq(nome)))
                 .ifPresent(it -> { isExists.set(true); } );
+
+        System.out.println(isExists);
           return isExists.get();
+    }
+
+    private boolean isNomeExistsUp(String nome, Long id){
+        AtomicBoolean isExists = new AtomicBoolean(false);
+        this.filmeDao.findOne(where(nomeEq(nome)).and(not(idEq(id))))
+                .ifPresent(it -> { isExists.set(true); } );
+
+        System.out.println(isExists);
+        return isExists.get();
     }
 
     private FilmeVO convertToFilmeVO(Filme filme){
@@ -66,7 +77,7 @@ public class FilmeService implements ServiceInterface<FilmeVO,Long>{
 
     @Override
     public FilmeVO save(FilmeVO dto) {
-        if(this.isNomeExists(dto.getNome(),dto.getId())){
+        if(this.isNomeExists(dto.getNome())){
             throw conflict("Já existe um Filme com o mesmo Nome.");
         }
         return FilmeVO.create(this.filmeDao.save(Filme.create(dto)));
@@ -74,7 +85,7 @@ public class FilmeService implements ServiceInterface<FilmeVO,Long>{
 
     @Override
     public FilmeVO update(FilmeVO dto) {
-        if(this.isNomeExists(dto.getNome(),dto.getId())){
+        if(this.isNomeExistsUp(dto.getNome(),dto.getIdFilme())){
             throw conflict("Já existe um Filme com o mesmo Nome.");
         }
         return FilmeVO.create(this.filmeDao.save(Filme.create(dto)));

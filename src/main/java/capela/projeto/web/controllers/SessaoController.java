@@ -3,16 +3,20 @@ package capela.projeto.web.controllers;
 import capela.projeto.data.service.SessaoService;
 import capela.projeto.web.vo.SessaoVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import static java.lang.String.format;
 import static org.springframework.http.ResponseEntity.*;
 
 @RestController
-@RequestMapping("/sessoes")
+@RequestMapping(value = "/sessoes")
 public class SessaoController implements ControllerCrudInterface<SessaoVO,Long> {
 
     private final SessaoService sessaoService;
@@ -23,15 +27,20 @@ public class SessaoController implements ControllerCrudInterface<SessaoVO,Long> 
     }
 
     @Override
-    public ResponseEntity<?> listar() {
+    public ResponseEntity<List> listar() {
         return ok(this.sessaoService.findAll());
     }
-    @Override
-    public ResponseEntity<?> inserir(SessaoVO req) {
-        req.setId(null);
+
+    @GetMapping(value = "/list/{id}",produces = {"application/json","application/xml","application/x-yaml"})
+    public ResponseEntity<?> listarPorCinema(@PathVariable Long id){
+        return ok(this.sessaoService.findAllCinema(id));
+    }
+
+    public ResponseEntity<?> inserir(@RequestBody SessaoVO req) {
+        req.setIdSessao(null);
         final var sessao = this.sessaoService.save(req);
-        return created(URI.create(format("/sessoes/%d", sessao.getId()))).body(Map.of(
-                "id", sessao.getId()));
+        return created(URI.create(format("/sessoes/%d", sessao.getIdSessao()))).body(Map.of(
+                "id", sessao.getIdSessao()));
     }
 
     @Override
@@ -40,8 +49,8 @@ public class SessaoController implements ControllerCrudInterface<SessaoVO,Long> 
     }
 
     @Override
-    public ResponseEntity<?> alterar(Long id, SessaoVO req) {
-        req.setId(id);
+    public ResponseEntity<?> alterar(Long id,@RequestBody SessaoVO req) {
+        req.setIdSessao(id);
         this.sessaoService.update(req);
         return noContent().build();
     }
@@ -53,6 +62,9 @@ public class SessaoController implements ControllerCrudInterface<SessaoVO,Long> 
 
     @Override
     public ResponseEntity<?> listaPaginada(int page, int limit, String direction) {
-        return null;
+        var sortDirection = "desc".equalsIgnoreCase(direction) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, limit, Sort.by(sortDirection,"diaSemana"));
+        Page<SessaoVO> sessoes = this.sessaoService.findAll(pageable);
+        return ResponseEntity.ok(sessoes);
     }
 }

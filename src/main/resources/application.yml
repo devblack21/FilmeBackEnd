@@ -13,11 +13,16 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5Dialect
+        jdbc:
+          time_zone: UTC
   jmx:
     enabled: false
   datasource:
     url: jdbc:mysql://localhost:3311/capela?createDatabaseIfNotExist=true&useTimezone=true&serverTimezone=UTC
     username: root
     password: root
+  jackson:
+    serialization:
+      write_dates_as_timestamps: false
 
 

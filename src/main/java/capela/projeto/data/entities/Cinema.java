@@ -29,7 +29,7 @@ public class Cinema implements Serializable {
     private String nome;
     @NotBlank
     @Size(min = 2, max = 100)
-    @Column(name = "genero",nullable = false)
+    @Column(name = "cidade",nullable = false)
     private String cidade;
     @NotBlank
     @Size(min = 2, max = 100)

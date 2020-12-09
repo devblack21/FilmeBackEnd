@@ -5,11 +5,8 @@ import lombok.*;
 import org.hibernate.validator.constraints.Range;
 import org.modelmapper.ModelMapper;
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -24,14 +21,10 @@ public class Sessao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank
-    @Size(min = 2, max = 100)
     @Enumerated(EnumType.STRING)
     private DiaSemana diaSemana;
-    @NotBlank
-    @Size(min = 2, max = 100)
     @Column(name = "horario",nullable = false)
-    private LocalDateTime horario;
+    private LocalTime horario;
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Cinema cinema;
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
@@ -42,7 +35,10 @@ public class Sessao {
     private int sala;
 
     public static Sessao create(SessaoVO sessaoVO){
-        return new ModelMapper().map(sessaoVO, Sessao.class);
+        Sessao sessao = new ModelMapper().map(sessaoVO, Sessao.class);
+        sessao.setCinema(Cinema.create(sessaoVO.getCinema()));
+        sessao.setFilme(Filme.create(sessaoVO.getFilme()));
+        return sessao;
     }
 
 }

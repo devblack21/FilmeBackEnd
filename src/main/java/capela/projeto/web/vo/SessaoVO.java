@@ -1,43 +1,74 @@
 package capela.projeto.web.vo;
 
-import capela.projeto.data.entities.Cinema;
 import capela.projeto.data.entities.DiaSemana;
-import capela.projeto.data.entities.Filme;
 import capela.projeto.data.entities.Sessao;
+import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 import org.hibernate.validator.constraints.Range;
-import org.modelmapper.ModelMapper;
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.io.Serializable;
+import java.time.LocalTime;
 
+@JsonPropertyOrder({"idSessao","diaSemana","horario","cinema","filme","sala"})
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class SessaoVO {
+public class SessaoVO implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @NotBlank
-    @Size(min = 2, max = 100)
+    @JsonProperty("idSessao")
+    private Long idSessao;
+    @JsonProperty("diaSemana")
     private DiaSemana diaSemana;
-    @NotBlank
-    @Size(min = 2, max = 100)
-    private LocalDateTime horario;
-    private Cinema cinema;
-    private Filme filme;
-    @NotNull
+    @JsonProperty("horario")
+    @JsonFormat(pattern = "HH:mm", locale = "pt-BR", timezone = "America/Sao_Paulo")
+    private LocalTime horario;
+    @JsonProperty("cinema")
+    private CinemaVO cinema;
+    @JsonProperty("filme")
+    private FilmeVO filme;
     @Range(min = 0, max = 99)
+    @JsonProperty("sala")
     private int sala;
 
+    @JsonCreator
+    public SessaoVO(@JsonProperty("cinemaid") Long idCinema, @JsonProperty("filmeid") Long filmeId)
+    {
+        cinema = CinemaVO.fromId(idCinema);
+        filme = FilmeVO.fromId(filmeId);
+    }
+
+   @JsonIgnore
+    public void setCinema(Long id){
+
+        cinema = CinemaVO.fromId(id);
+    }
+
+    public void setCinema(CinemaVO cinema){
+        this.cinema = cinema;
+    }
+
+    @JsonIgnore
+    public void setFilme(Long id){
+
+        filme = FilmeVO.fromId(id);
+    }
+
+    public void setFilme(FilmeVO filme){
+
+        this.filme = filme;
+    }
+
     public static SessaoVO create(Sessao sessao){
-        return new ModelMapper().map(sessao, SessaoVO.class);
+        SessaoVO sessaoVO = new SessaoVO();
+        sessaoVO.setFilme(FilmeVO.create(sessao.getFilme()));
+        sessaoVO.setCinema(CinemaVO.create(sessao.getCinema()));
+        sessaoVO.setFilme(FilmeVO.create(sessao.getFilme()));
+        sessaoVO.setIdSessao(sessao.getId());
+        sessaoVO.setDiaSemana(sessao.getDiaSemana());
+        sessaoVO.setHorario(sessao.getHorario());
+        sessaoVO.setSala(sessao.getSala());
+        return sessaoVO;
     }
 }

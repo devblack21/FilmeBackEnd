@@ -2,22 +2,21 @@ package capela.projeto.data.convert;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-import java.sql.Date;
-import java.time.LocalDate;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Converter(autoApply = true)
-class LocalDateConverter implements AttributeConverter<LocalDate, Date> {
+class LocalDateTimeConverter  implements AttributeConverter<LocalDateTime, Timestamp> {
 
     @Override
-    public Date convertToDatabaseColumn(LocalDate attribute) {
+    public Timestamp convertToDatabaseColumn(LocalDateTime attribute) {
 
-        return Date.valueOf(attribute);
+        return Timestamp.valueOf(attribute);
     }
 
     @Override
-    public LocalDate convertToEntityAttribute(Date dbData) {
+    public LocalDateTime convertToEntityAttribute(Timestamp dbData) {
 
-        return dbData.toLocalDate();
+        return dbData.toLocalDateTime();
     }
-
 }

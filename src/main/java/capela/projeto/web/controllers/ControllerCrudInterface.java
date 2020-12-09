@@ -7,15 +7,18 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public interface ControllerCrudInterface<T, ID> {
 
-    @GetMapping
+    @GetMapping(produces = {"application/json","application/xml","application/x-yaml"})
     public ResponseEntity<?> listar();
-    @PostMapping
+    @PostMapping( consumes = {"application/json","application/xml","application/x-yaml"},
+            produces = {"application/json","application/xml","application/x-yaml"})
     public ResponseEntity<?> inserir(@Validated @RequestBody T req) ;
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = {"application/json","application/xml","application/x-yaml"})
     public ResponseEntity<?> buscar(@PathVariable ID id) ;
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = {"application/json","application/xml","application/x-yaml"},
+            produces = {"application/json","application/xml","application/x-yaml"})
     public ResponseEntity<?> alterar(@PathVariable ID id, @Validated @RequestBody T req);
-    @DeleteMapping("/{id}")
+    @DeleteMapping(value = "/{id}",consumes = {"application/json","application/xml","application/x-yaml"},
+            produces = {"application/json","application/xml","application/x-yaml"})
     public ResponseEntity<?> excluir(@PathVariable ID id) ;
     @GetMapping("/paginated")
     public ResponseEntity<?> listaPaginada(@RequestParam(value = "page",defaultValue = "0") int page,

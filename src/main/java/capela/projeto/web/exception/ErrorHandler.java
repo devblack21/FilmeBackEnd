@@ -2,9 +2,7 @@ package capela.projeto.web.exception;
 
 import static java.util.stream.Collectors.*;
 import static org.springframework.http.ResponseEntity.*;
-
 import java.util.Map;
-
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -25,7 +23,7 @@ public class ErrorHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException exception) {
         return badRequest().body(Map.of(
-                "mensagem", "Não foi possível ler a requisição."));
+                "mensagem", "Não foi possível ler a requisição.\n"+exception.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

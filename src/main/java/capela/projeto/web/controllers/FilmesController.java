@@ -1,8 +1,12 @@
 package capela.projeto.web.controllers;
 
-import capela.projeto.data.service.FilmeService;
+import capela.projeto.data.service.FilmeService;;
 import capela.projeto.web.vo.FilmeVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
@@ -13,7 +17,8 @@ import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
-@RequestMapping("/filmes")
+@RequestMapping(value = "/filmes"
+)
 public class FilmesController implements ControllerCrudInterface<FilmeVO,Long> {
 
     private final FilmeService filmeService;
@@ -25,14 +30,16 @@ public class FilmesController implements ControllerCrudInterface<FilmeVO,Long> {
 
     @Override
     public ResponseEntity<?> listar() {
+
         return ok(this.filmeService.findAll());
     }
+
     @Override
     public ResponseEntity<?> inserir(FilmeVO req) {
-        req.setId(null);
+        req.setIdFilme(null);
         final var filme = this.filmeService.save(req);
-        return created(URI.create(format("/filmes/%d", filme.getId()))).body(Map.of(
-                "id", filme.getId()));
+        return created(URI.create(format("/filmes/%d", filme.getIdFilme()))).body(Map.of(
+                "id", filme.getIdFilme()));
     }
 
     @Override
@@ -42,7 +49,7 @@ public class FilmesController implements ControllerCrudInterface<FilmeVO,Long> {
 
     @Override
     public ResponseEntity<?> alterar(Long id, FilmeVO req) {
-        req.setId(id);
+        req.setIdFilme(id);
         this.filmeService.update(req);
         return noContent().build();
     }
@@ -54,6 +61,9 @@ public class FilmesController implements ControllerCrudInterface<FilmeVO,Long> {
 
     @Override
     public ResponseEntity<?> listaPaginada(int page, int limit, String direction) {
-        return null;
+        var sortDirection = "desc".equalsIgnoreCase(direction) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, limit, Sort.by(sortDirection,"nome"));
+        Page<FilmeVO> filmes = this.filmeService.findAll(pageable);
+        return ResponseEntity.ok(filmes);
     }
 }

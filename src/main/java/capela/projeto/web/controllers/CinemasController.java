@@ -3,6 +3,10 @@ package capela.projeto.web.controllers;
 import capela.projeto.data.service.CinemaService;
 import capela.projeto.web.vo.CinemaVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,14 +28,14 @@ public class CinemasController implements ControllerCrudInterface<CinemaVO,Long>
 
     @Override
     public ResponseEntity<?> listar() {
-        return ok(this.cinemaService.findAll());
+        return ok(this.cinemaService.findAll().toArray());
     }
     @Override
     public ResponseEntity<?> inserir(CinemaVO req) {
-        req.setId(null);
+        req.setIdCinema(null);
         final var cinema = this.cinemaService.save(req);
-        return created(URI.create(format("/cinemas/%d", cinema.getId()))).body(Map.of(
-                "id", cinema.getId()));
+        return created(URI.create(format("/cinemas/%d", cinema.getIdCinema()))).body(Map.of(
+                "id", cinema.getIdCinema()));
     }
 
     @Override
@@ -41,7 +45,7 @@ public class CinemasController implements ControllerCrudInterface<CinemaVO,Long>
 
     @Override
     public ResponseEntity<?> alterar(Long id, CinemaVO req) {
-        req.setId(id);
+        req.setIdCinema(id);
         this.cinemaService.update(req);
         return noContent().build();
     }
@@ -53,6 +57,9 @@ public class CinemasController implements ControllerCrudInterface<CinemaVO,Long>
 
     @Override
     public ResponseEntity<?> listaPaginada(int page, int limit, String direction) {
-        return null;
+        var sortDirection = "desc".equalsIgnoreCase(direction) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, limit, Sort.by(sortDirection,"nome"));
+        Page<CinemaVO>  cinemas = this.cinemaService.findAll(pageable);
+        return ResponseEntity.ok(cinemas);
     }
 }
